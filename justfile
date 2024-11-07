@@ -45,6 +45,50 @@ clean:
 # deploy charmed hpc cluster
 deploy: init
   #!/usr/bin/env bash
+
+  # Workaround for:
+  # https://github.com/juju/terraform-provider-juju/issues/573
+  #
+  # Deploying on AWS intermittently fails with i/o timeouts as the Juju
+  # Terraform provider returns inaccessible local IP addresses in the list of
+  # API controllers. Work around by determining if the current cloud is 'aws'
+  # and set environment variable 'JUJU_CONTROLLER_ADDRESSES' to the non-local
+  # endpoint(s) if so.
+  #
+  # For example, controller configuration:
+  #
+  #   cloud: aws
+  #   api_endpoints = ['44.192.113.5:17070', '172.31.11.216:17070',
+  #                    '252.11.216.1:17070']
+  #
+  # results in:
+  #
+  #   export JUJU_CONTROLLER_ADDRESSES=44.192.113.5:17070
+  #
+  # Check if deploying on AWS
+  cont_config=$(juju show-controller)
+  cloud="$(echo "$cont_config" | grep -oP "cloud: \K\w+")"
+
+  if [ "$cloud" = "aws" ]; then
+    # Filter out local IP addresses from API endpoints
+    api_endpoints="$(echo "$cont_config" | grep -oP "api-endpoints: \[\K[^]]+")"
+
+    valid_endpoints="$(
+      echo $api_endpoints |     # e.g. "'1.2.3.4:17070', '172.1.2.3:17070'"
+      grep -oP "'\S+'" |        # Match non-whitespace between single quotes
+      grep -vE "^'172|^'252" |  # Exclude local IPs
+      sed "s/'//g" |            # Remove single quotes from remaining entries
+      paste -sd "," -           # Join entries into comma-separated string
+    )"
+
+    # Apply only if endpoints list is non-empty, i.e. at least one valid
+    # endpoint was found.
+    if [ -n "$valid_endpoints" ]; then
+      export JUJU_CONTROLLER_ADDRESSES="$valid_endpoints"
+    fi
+  fi
+  # End of workaround
+
   tofu plan
   tofu apply -auto-approve
 
