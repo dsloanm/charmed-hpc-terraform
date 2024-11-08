@@ -28,11 +28,17 @@ To learn more about the deployment and use of a Charmed HPC cluster, the followi
 
 ## 🛠️ Development
 
-Useful [OpenTofu](https://opentofu.org/) commands to help while hacking on the plans:
+A useful command to help while hacking on the plans is:
 
 ```shell
-tofu fmt      # Apply formatting standards to files.
-tofu validate # Ensure files are syntactically valid.
+just check  # Checks file formatting and syntax are valid.
+```
+
+or equivalent [OpenTofu](https://opentofu.org/) commands:
+
+```shell
+tofu fmt -check -recursive      # Apply formatting standards to files.
+tofu validate                   # Ensure files are syntactically valid.
 ```
 
 If you're interested in contributing, take a look at our [contributing guidelines](./CONTRIBUTING.md).

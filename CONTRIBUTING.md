@@ -158,11 +158,8 @@ Adhering to the following process is the best way to get your contribution accep
 4. Ensure that your changes pass validation:
 
     ```bash
-    # Apply formatting standards to files.
-    tofu fmt
-
-    # Ensure files are syntactically valid.
-    tofu validate
+    # Apply formatting standards and ensure files are syntactically valid.
+    just check
     ```
 
 5. Commit your changes in logical chunks to your topic branch.
