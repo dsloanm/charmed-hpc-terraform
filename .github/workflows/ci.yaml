@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          sudo snap install --classic opentofu,
+          sudo snap install --classic opentofu
           sudo apt install -y just
       - name: Run tests
         run: just check
