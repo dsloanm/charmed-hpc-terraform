@@ -29,11 +29,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo snap install --classic opentofu
-          sudo apt install -y just
-      - name: Run tests
           sudo apt-get update
           sudo apt-get install -y just
       - name: Run tests
         env:
-          TERM: "xterm-256color"
+          TERM: xterm-256color
         run: just check
