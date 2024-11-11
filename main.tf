@@ -24,7 +24,7 @@ module "controller" {
   source = "git::https://github.com/charmed-hpc/slurm-charms//charms/slurmctld/terraform"
 
   model_name = juju_model.charmed-hpc.name
-  app_name   = "controller"
+  app_name   = controller"
   channel    = var.controller-channel
   units      = var.controller-scale
 }
